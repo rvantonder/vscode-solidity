@@ -1,0 +1,252 @@
+%YAML 1.2
+---
+# http://www.sublimetext.com/docs/3/syntax.html
+name: Solidity
+file_extensions:
+  - sol
+scope: source.solidity
+contexts:
+  main:
+    - include: natspec
+    - include: comment
+    - include: operator
+    - include: control
+    - include: constant
+    - include: number
+    - include: string
+    - include: type
+    - include: global
+    - include: declaration
+    - include: function-call
+    - include: assembly
+    - include: punctuation
+  comment:
+    - include: comment-line
+    - include: comment-block
+  assembly:
+    - match: \b(assembly)\b
+      scope: keyword.control.assembly.solidity
+    - match: \b(let)\b
+      scope: storage.type.assembly.solidity
+  comment-block:
+    - match: /\*
+      push:
+        - meta_scope: comment.block.solidity
+        - match: \*/
+          pop: true
+  comment-line:
+    - match: (?<!tp:)//.*?$
+      scope: comment.line.solidity
+  constant:
+    - include: constant-boolean
+    - include: constant-time
+    - include: constant-currency
+  constant-boolean:
+    - match: \b(true|false)\b
+      scope: constant.language.boolean.solidity
+  constant-currency:
+    - match: \b(ether|wei|finney|szabo)\b
+      scope: constant.language.currency.solidity
+  constant-time:
+    - match: \b(seconds|minutes|hours|days|weeks|years)\b
+      scope: constant.language.time.solidity
+  control:
+    - include: control-flow
+    - include: control-using
+    - include: control-import
+    - include: control-pragma
+    - include: control-underscore
+    - include: control-other
+  control-flow:
+    - match: \b(if|else|for|while|do|break|continue|throw|returns?)\b
+      scope: keyword.control.flow.solidity
+  control-import:
+    - match: \b(import)\b
+      scope: keyword.control.import.solidity
+  control-other:
+    - match: \b(new|delete|emit)\b
+      scope: keyword.control.solidity
+  control-pragma:
+    - match: '\b(pragma)(?:\s+([A-Za-z_]\w+)\s+([^\s]+))?\b'
+      captures:
+        1: keyword.control.pragma.solidity
+        2: entity.name.tag.pragma.solidity
+        3: constant.other.pragma.solidity
+  control-underscore:
+    - match: \b(_)\b
+      scope: constant.other.underscore.solidity
+  control-using:
+    - match: \b(using)\b
+      scope: keyword.control.using.solidity
+  declaration:
+    - include: declaration-contract
+    - include: declaration-interface
+    - include: declaration-library
+    - include: declaration-struct
+    - include: declaration-event
+    - include: declaration-enum
+    - include: declaration-function
+    - include: declaration-constructor
+    - include: declaration-modifier
+    - include: declaration-mapping
+  declaration-constructor:
+    - match: \b(constructor)\b
+      captures:
+        1: storage.type.constructor.solidity
+  declaration-contract:
+    - match: '\b(contract)(\s+([A-Za-z_]\w*))?\b'
+      captures:
+        1: storage.type.contract.solidity
+        3: entity.name.type.contract.solidity
+    - match: \b(is)\b
+      scope: storage.modifier.is.solidity
+  declaration-enum:
+    - match: '\b(enum)(\s+([A-Za-z_]\w*))?\b'
+      captures:
+        1: storage.type.enum.solidity
+        3: entity.name.type.enum.solidity
+  declaration-event:
+    - match: '\b(event)(\s+([A-Za-z_]\w*))?\b'
+      captures:
+        1: storage.type.event.solidity
+        3: entity.name.type.event.solidity
+  declaration-function:
+    - match: '\b(function)\s+([A-Za-z_]\w*)\b'
+      captures:
+        1: storage.type.function.solidity
+        2: entity.name.function.solidity
+    - match: \b(private|public|internal|external|constant|immutable|pure|view|payable|nonpayable|inherited|indexed|storage|memory|virtual|calldata|override|abstract)\b
+      scope: storage.type.mofifier.solidity
+  declaration-interface:
+    - match: '\b(interface)(\s+([A-Za-z_]\w*))?\b'
+      captures:
+        1: storage.type.interface.solidity
+        3: entity.name.type.interface.solidity
+  declaration-library:
+    - match: '\b(library)(\s+([A-Za-z_]\w*))?\b'
+      captures:
+        1: storage.type.library.solidity
+        3: entity.name.type.library.solidity
+  declaration-mapping:
+    - match: \b(mapping)\b
+      scope: storage.type.mapping.solidity
+  declaration-modifier:
+    - match: '\b(modifier)(\s+([A-Za-z_]\w*))?\b'
+      captures:
+        1: storage.type.modifier.solidity
+        3: entity.name.function.solidity
+  declaration-struct:
+    - match: '\b(struct)(\s+([A-Za-z_]\w*))?\b'
+      captures:
+        1: storage.type.struct.solidity
+        3: entity.name.type.struct.solidity
+  function-call:
+    - match: '\b([A-Za-z_]\w*)\s*\('
+      captures:
+        1: entity.name.function.solidity
+  global:
+    - include: global-variables
+    - include: global-functions
+  global-functions:
+    - match: \b(require|assert|revert)\b
+      scope: keyword.control.exceptions.solidity
+    - match: \b(selfdestruct|suicide)\b
+      scope: keyword.control.contract.solidity
+    - match: \b(addmod|mulmod|keccak256|sha256|sha3|ripemd160|ecrecover)\b
+      scope: support.function.math.solidity
+    - match: \b(blockhash|gasleft)\b
+      scope: variable.language.transaction.solidity
+  global-variables:
+    - match: \b(msg|block|tx|now)\b
+      scope: variable.language.transaction.solidity
+    - match: \b(this)\b
+      scope: variable.language.this.solidity
+    - match: \b(super)\b
+      scope: variable.language.super.solidity
+  natspec:
+    - match: /\*\*
+      push:
+        - meta_scope: comment.block.documentation.solidity
+        - match: \*/
+          pop: true
+        - include: natspec-tags
+    - match: ///
+      push:
+        - meta_scope: comment.block.documentation.solidity
+        - match: $
+          pop: true
+        - include: natspec-tags
+  natspec-tag-author:
+    - match: (@author)\b
+      scope: storage.type.author.natspec
+  natspec-tag-dev:
+    - match: (@dev)\b
+      scope: storage.type.dev.natspec
+  natspec-tag-notice:
+    - match: (@notice)\b
+      scope: storage.type.dev.natspec
+  natspec-tag-param:
+    - match: '(@param)(\s+([A-Za-z_]\w*))?\b'
+      captures:
+        1: storage.type.param.natspec
+        3: variable.other.natspec
+  natspec-tag-return:
+    - match: (@return)\b
+      scope: storage.type.return.natspec
+  natspec-tag-title:
+    - match: (@title)\b
+      scope: storage.type.title.natspec
+  natspec-tags:
+    - include: natspec-tag-title
+    - include: natspec-tag-author
+    - include: natspec-tag-notice
+    - include: natspec-tag-dev
+    - include: natspec-tag-param
+    - include: natspec-tag-return
+  number:
+    - include: number-decimal
+    - include: number-hex
+  number-decimal:
+    - match: \b(\d+(\.\d+)?)\b
+      scope: constant.numeric.decimal.solidity
+  number-hex:
+    - match: '\b(0[xX][a-fA-F0-9]+)\b'
+      scope: constant.numeric.hexadecimal.solidity
+  operator:
+    - include: operator-logic
+    - include: operator-mapping
+    - include: operator-arithmetic
+    - include: operator-binary
+    - include: operator-assignment
+  operator-arithmetic:
+    - match: (\+|\-|\/|\*)
+      scope: keyword.operator.arithmetic.solidity
+  operator-assignment:
+    - match: (\:?=)
+      scope: keyword.operator.assignment.solidity
+  operator-binary:
+    - match: (\^|\&|\||<<|>>)
+      scope: keyword.operator.binary.solidity
+  operator-logic:
+    - match: (==|<(?!<)|<=|>(?!>)|>=|\&\&|\|\||\:(?!=)|\?)
+      scope: keyword.operator.logic.solidity
+  operator-mapping:
+    - match: (=>)
+      scope: keyword.operator.mapping.solidity
+  punctuation:
+    - match: ;
+      scope: punctuation.terminator.statement.solidity
+    - match: \.
+      scope: punctuation.accessor.solidity
+    - match: ","
+      scope: punctuation.separator.solidity
+  string:
+    - match: \".*?\"
+      scope: string.quoted.double.solidity
+    - match: \'.*?\'
+      scope: string.quoted.single.solidity
+  type:
+    - include: type-primitive
+  type-primitive:
+    - match: \b(address|string\d*|bytes\d*|int\d*|uint\d*|bool|hash\d*)\b
+      scope: support.type.primitive.solidity
